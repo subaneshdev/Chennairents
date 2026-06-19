@@ -523,8 +523,27 @@ async function openPinDetail(pin) {
 
         // Display landlord contacts
         document.getElementById("detail-landlord-contact").style.display = 'block';
-        document.getElementById("contact-email").innerText = pin.contact_email || '--';
-        document.getElementById("contact-phone").innerText = pin.contact_phone || '--';
+        if (pin.ip_hash === 'seed') {
+            document.getElementById("contact-email").innerText = 'Already Booked';
+            document.getElementById("contact-phone").innerText = 'Already Booked';
+            const interestBtn = document.getElementById("express-interest-btn");
+            if (interestBtn) {
+                interestBtn.innerText = 'Already Booked';
+                interestBtn.disabled = true;
+                interestBtn.style.background = '#6b7280';
+                interestBtn.onclick = () => alert("This seed property has already been booked by another seeker.");
+            }
+        } else {
+            document.getElementById("contact-email").innerText = pin.contact_email || '--';
+            document.getElementById("contact-phone").innerText = pin.contact_phone || '--';
+            const interestBtn = document.getElementById("express-interest-btn");
+            if (interestBtn) {
+                interestBtn.innerText = "I'm Interested";
+                interestBtn.disabled = false;
+                interestBtn.style.background = '#ff3e00';
+                interestBtn.onclick = () => openExpressInterest();
+            }
+        }
     } else {
         document.getElementById("detail-landlord-contact").style.display = 'none';
     }
@@ -1623,6 +1642,10 @@ window.shareInstagramStory = function() {
 
 window.openExpressInterest = function() {
     if (!currentPin) return;
+    if (currentPin.ip_hash === 'seed') {
+        alert("This seed property has already been booked by another seeker.");
+        return;
+    }
     
     closeModal("pin-detail-modal");
 
