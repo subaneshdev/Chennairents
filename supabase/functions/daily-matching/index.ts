@@ -50,10 +50,10 @@ serve(async (req) => {
         // Send email to Seeker
         await sendEmail({
           to: match.seeker_email,
-          subject: `[chennai.rent] New Rental Match Found in ${match.area}!`,
+          subject: `[chennairents.in] New Rental Match Found in ${match.area}!`,
           html: `
             <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid black;">
-              <h1 style="font-size: 24px; border-bottom: 2px double black; padding-bottom: 8px; margin-bottom: 16px; text-transform: uppercase; text-align: center;">chennai.rent</h1>
+              <h1 style="font-size: 24px; border-bottom: 2px double black; padding-bottom: 8px; margin-bottom: 16px; text-transform: uppercase; text-align: center;">chennairents.in</h1>
               <p>Hello,</p>
               <p>We found an active direct landlord listing matching your preferences within 2.5km of your search target in <strong>${match.area}</strong>!</p>
               <table style="width: 100%; border: 1px solid black; border-collapse: collapse; margin: 16px 0;">
@@ -67,7 +67,7 @@ serve(async (req) => {
                 <li>Email: <a href="mailto:${match.listing_email}">${match.listing_email}</a></li>
                 <li>Phone: <a href="tel:${match.listing_phone}">${match.listing_phone}</a></li>
               </ul>
-              <p style="font-size: 11px; font-style: italic; color: #555; margin-top: 24px; border-top: 1px solid black; padding-top: 8px;">You received this email because you subscribed to rent alerts on chennai.rent.</p>
+              <p style="font-size: 11px; font-style: italic; color: #555; margin-top: 24px; border-top: 1px solid black; padding-top: 8px;">You received this email because you subscribed to rent alerts on chennairents.in.</p>
             </div>
           `
         });
@@ -75,10 +75,10 @@ serve(async (req) => {
         // Send email to Landlord
         await sendEmail({
           to: match.listing_email,
-          subject: `[chennai.rent] A Flat Seeker is interested in your property!`,
+          subject: `[chennairents.in] A Flat Seeker is interested in your property!`,
           html: `
             <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid black;">
-              <h1 style="font-size: 24px; border-bottom: 2px double black; padding-bottom: 8px; margin-bottom: 16px; text-transform: uppercase; text-align: center;">chennai.rent</h1>
+              <h1 style="font-size: 24px; border-bottom: 2px double black; padding-bottom: 8px; margin-bottom: 16px; text-transform: uppercase; text-align: center;">chennairents.in</h1>
               <p>Hello,</p>
               <p>A flat seeker matching your property's BHK size and rent limits has been identified within 2.5km of your property in <strong>${match.area}</strong>!</p>
               <p><strong>Seeker Preferences:</strong></p>
@@ -92,7 +92,7 @@ serve(async (req) => {
                 <li>Email: <a href="mailto:${match.seeker_email}">${match.seeker_email}</a></li>
                 <li>Phone: <a href="tel:${match.seeker_phone}">${match.seeker_phone}</a></li>
               </ul>
-              <p style="font-size: 11px; font-style: italic; color: #555; margin-top: 24px; border-top: 1px solid black; padding-top: 8px;">This matching notification was dispatched automatically by chennai.rent.</p>
+              <p style="font-size: 11px; font-style: italic; color: #555; margin-top: 24px; border-top: 1px solid black; padding-top: 8px;">This matching notification was dispatched automatically by chennairents.in.</p>
             </div>
           `
         });
@@ -124,7 +124,7 @@ async function sendEmail({ to, subject, html }: { to: string; subject: string; h
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      from: 'alerts@chennai.rent',
+      from: 'alerts@chennairents.in',
       to,
       subject,
       html

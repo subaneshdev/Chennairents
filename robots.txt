@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://chennai.rent/sitemap.xml
+Sitemap: https://www.chennairents.in/sitemap.xml
+

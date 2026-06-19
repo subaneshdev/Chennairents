@@ -29,7 +29,7 @@ let pendingInterestPhone = null;
 let pendingInterestPayload = null;
 
 let metroLinesGroup;
-let showMetro = true;
+let showMetro = false;
 
 // Filter variables
 let activeFilterBhk = [];
@@ -159,6 +159,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!localStorage.getItem('chennai_rent_onboarded')) {
         openModal('welcome-modal');
     }
+
+    // Default pin placement mode to 'on'
+    enterPinPlacementMode('pin');
 });
 
 // Device ID setup
@@ -1368,9 +1371,9 @@ window.locateUser = function() {
 
 // 13. FAQ Accordion & Local Listings
 const faqs = [
-    { q: "How does chennai.rent work?", a: "Tap anywhere on the map and drop your rent anonymously. Other renters see real prices in their area. If you're flat-hunting, drop a seeker pin with your budget — we email you when matching listings appear within 2.5km." },
-    { q: "Is chennai.rent free? Do I need to sign up?", a: "Yes, free for everyone. No signup, no login, no app required. We don't charge tenants or owners and have no plans to. Rents are crowdsourced for local transparency." },
-    { q: "How is chennai.rent different from broker sites?", a: "Standard sites show broker-quoted listings, which are often inflated. chennai.rent shows real rents shared by actual current and past tenants, letting you see historical averages to guide negotiation." },
+    { q: "How does chennairents.in work?", a: "Tap anywhere on the map and drop your rent anonymously. Other renters see real prices in their area. If you're flat-hunting, drop a seeker pin with your budget — we email you when matching listings appear within 2.5km." },
+    { q: "Is chennairents.in free? Do I need to sign up?", a: "Yes, free for everyone. No signup, no login, no app required. We don't charge tenants or owners and have no plans to. Rents are crowdsourced for local transparency." },
+    { q: "How is chennairents.in different from broker sites?", a: "Standard sites show broker-quoted listings, which are often inflated. chennairents.in shows real rents shared by actual current and past tenants, letting you see historical averages to guide negotiation." },
     { q: "Is my data anonymous? Will my landlord know?", a: "Yes, anonymous. Your IP address is never displayed. The pin shows only the rent amount, BHK, and approximate location (rounded to ~100m for privacy). Your landlord cannot trace it back to you." },
     { q: "How do you prevent fake or inflated rents?", a: "We validate that rent falls within a plausible range for the BHK, auto-flag statistical outliers (3x above/below area median), and auto-hide pins that accumulate 3 community reports." }
 ];
@@ -1569,7 +1572,7 @@ window.shareWhatsApp = function() {
     if (!currentPin) return;
     const rentFormatted = Number(currentPin.rent).toLocaleString('en-IN');
     const flatType = currentPin.is_listing ? (currentPin.looking_for_flatmate ? 'Room in shared flat' : 'Whole flat') : 'rent pin';
-    const msg = `Check out this rental on chennai.rent: ${currentPin.bhk} BHK ${flatType} in ${currentPin.area || 'Chennai'} for ₹${rentFormatted}/month. See full details on map: https://chennai.rent/neighbourhood.html?area=${(currentPin.area || '').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    const msg = `Check out this rental on chennairents.in: ${currentPin.bhk} BHK ${flatType} in ${currentPin.area || 'Chennai'} for ₹${rentFormatted}/month. See full details on map: https://www.chennairents.in/neighbourhood.html?area=${(currentPin.area || '').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
 };
@@ -1593,12 +1596,12 @@ window.shareInstagramStory = function() {
     ctx.lineWidth = 1;
     ctx.strokeRect(42, 42, 996, 1836);
 
-    // Header "chennai.rent"
+    // Header "chennairents.in"
     ctx.fillStyle = "#ff3e00";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "bold 72px 'Georgia', serif";
-    ctx.fillText("chennai.rent", 540, 200);
+    ctx.fillText("chennairents.in", 540, 200);
 
     // Tagline
     ctx.fillStyle = "#e2e8f0";
@@ -1671,7 +1674,7 @@ window.shareInstagramStory = function() {
 
     ctx.fillStyle = "#ff3e00";
     ctx.font = "bold 48px 'Inter', sans-serif";
-    ctx.fillText("www.chennai.rent", 540, 1770);
+    ctx.fillText("www.chennairents.in", 540, 1770);
 
     const link = document.createElement("a");
     link.download = `chennai_rent_${currentPin.bhk}bhk_${(currentPin.area || 'locality').replace(/\s+/g, '_').toLowerCase()}.png`;

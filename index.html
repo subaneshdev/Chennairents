@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>chennai.rent — Chennai Crowdsourced Rental Transparency Map</title>
+    <title>chennairents.in — Chennai Crowdsourced Rental Transparency Map</title>
     <meta name="description" content="An anonymous, crowdsourced rental transparency registry for Chennai. Real tenant reports pinned on the map, direct owner listings with no broker fees, and daily rent alert matching. 100% free." />
     <meta name="keywords" content="chennai rent map, chennai rents, rent in chennai, no broker chennai, OMR rent, Anna Nagar rent, Velachery rent, rent transparency, chennai flats for rent" />
-    <link rel="canonical" href="https://chennai.rent/" />
+    <link rel="canonical" href="https://www.chennairents.in/" />
     <link rel="stylesheet" href="index.css">
     
     <!-- Open Graph Metadata (Facebook / LinkedIn) -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="chennai.rent — Chennai Crowdsourced Rental Transparency Map" />
+    <meta property="og:title" content="chennairents.in — Chennai Crowdsourced Rental Transparency Map" />
     <meta property="og:description" content="Real rents pinned anonymously by tenants in Chennai. Spot broker inflation, browse direct owner listings, and setup automated matching alerts. No logins, 100% free." />
-    <meta property="og:url" content="https://chennai.rent/" />
-    <meta property="og:site_name" content="chennai.rent" />
-    <meta property="og:image" content="https://chennai.rent/assets/og-image.png" />
+    <meta property="og:url" content="https://www.chennairents.in/" />
+    <meta property="og:site_name" content="chennairents.in" />
+    <meta property="og:image" content="https://www.chennairents.in/assets/og-image.png" />
     
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="chennai.rent — Chennai Crowdsourced Rental Transparency Map" />
+    <meta name="twitter:title" content="chennairents.in — Chennai Crowdsourced Rental Transparency Map" />
     <meta name="twitter:description" content="Real rents pinned anonymously by tenants in Chennai. Browse direct owner listings with no broker fees." />
-    <meta name="twitter:image" content="https://chennai.rent/assets/og-image.png" />
+    <meta name="twitter:image" content="https://www.chennairents.in/assets/og-image.png" />
 
     <!-- Leaflet.js Mapping Library (Standard Leaflet, tiles swapped to CartoDB Positron Dark) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
@@ -38,7 +38,7 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "How does chennai.rent work?",
+          "name": "How does chennairents.in work?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Tap anywhere on the map and drop your rent anonymously. Other renters see real prices in their area. If you're flat-hunting, drop a seeker pin with your budget — we email you when matching listings appear within 2.5km."
@@ -46,7 +46,7 @@
         },
         {
           "@type": "Question",
-          "name": "Is chennai.rent free? Do I need to sign up?",
+          "name": "Is chennairents.in free? Do I need to sign up?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Yes, free for everyone. No signup, no login, no app required. We don't charge tenants or owners and have no plans to. Rents are crowdsourced for local transparency."
@@ -54,10 +54,10 @@
         },
         {
           "@type": "Question",
-          "name": "How is chennai.rent different from broker sites?",
+          "name": "How is chennairents.in different from broker sites?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Standard sites show broker-quoted listings, which are often inflated. chennai.rent shows real rents shared by actual current and past tenants, letting you see historical averages to guide negotiation."
+            "text": "Standard sites show broker-quoted listings, which are often inflated. chennairents.in shows real rents shared by actual current and past tenants, letting you see historical averages to guide negotiation."
           }
         },
         {
@@ -85,9 +85,9 @@
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "chennai.rent",
-      "url": "https://chennai.rent/",
-      "logo": "https://chennai.rent/assets/logo.png",
+      "name": "chennairents.in",
+      "url": "https://www.chennairents.in/",
+      "logo": "https://www.chennairents.in/assets/logo.png",
       "sameAs": [
         "https://github.com/subaneshdev/Chennairents"
       ]
@@ -133,10 +133,10 @@
 
     <!-- Chicklet Action Bar Shortcuts -->
     <div class="chicklet-bar" id="chicklet-bar">
+        <button class="chicklet" id="chicklet-pin" onclick="startPinFlow()"><span class="chicklet-icon">📌</span>Pin My Rent</button>
         <button class="chicklet" onclick="openTutorial()"><span class="chicklet-icon">🎓</span>How to use</button>
         <button class="chicklet" onclick="openLiveStats()"><span class="chicklet-icon">📊</span>Live Stats</button>
         <button class="chicklet" id="chicklet-avlb" onclick="toggleAvailableOnly()"><span class="chicklet-icon">🏠</span>Avlb Flats</button>
-        <button class="chicklet" onclick="startPinFlow()"><span class="chicklet-icon">📌</span>Pin My Rent</button>
         <button class="chicklet" onclick="startSeekerFlow()"><span class="chicklet-icon">🔍</span>Find a Flat</button>
         <button class="chicklet" onclick="startOwnerFlow()"><span class="chicklet-icon">💼</span>List My Flat</button>
         <button class="chicklet" onclick="openFaq()"><span class="chicklet-icon">❓</span>FAQ</button>
@@ -144,7 +144,7 @@
 
     <!-- Map Control Stack (Right Side Floating HUD) -->
     <div class="side-buttons-stack">
-        <button class="map-control-btn active" id="metro-btn" onclick="toggleMetroLines()" title="Toggle Metro Lines">
+        <button class="map-control-btn" id="metro-btn" onclick="toggleMetroLines()" title="Toggle Metro Lines">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="4" y="3" width="16" height="16" rx="2"/>
                 <line x1="4" y1="11" x2="20" y2="11"/>
@@ -280,7 +280,7 @@
         <div class="modal-card">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                 <div style="width:10px; height:10px; border-radius:50%; background:#ff3e00; box-shadow:0 0 10px #ff3e00;"></div>
-                <span class="welcome-brand" style="font-size:20px; font-weight:700; color:#ff6b35;">chennai.rent</span>
+                <span class="welcome-brand" style="font-size:20px; font-weight:700; color:#ff6b35;">chennairents.in</span>
             </div>
             <p style="color:#6b7280; font-size:12px; margin-bottom:18px;">Chennai's Crowdsourced Rental Transparency Map</p>
             
@@ -307,7 +307,7 @@
     <div class="modal-backdrop" id="tutorial-modal" onclick="closeModal('tutorial-modal')">
         <div class="modal-card" onclick="event.stopPropagation()">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <span class="modal-title">How to use chennai.rent</span>
+                <span class="modal-title">How to use chennairents.in</span>
                 <button class="close-btn" onclick="closeModal('tutorial-modal')">&times;</button>
             </div>
             <div class="intro-checklist">
@@ -930,7 +930,7 @@
 
     <!-- SEO Optimization & Semantic Accessibility Section (Visually Hidden) -->
     <section class="visually-hidden">
-        <h1>chennai.rent — Chennai Crowdsourced Rent Map & Rental Transparency Registry</h1>
+        <h1>chennairents.in — Chennai Crowdsourced Rent Map & Rental Transparency Registry</h1>
         <p>An anonymous, crowdsourced rental transparency platform for Chennai. Real tenant rent reports pinned on the map, helping tenants spot broker price inflation. Browse direct owner listings with no broker fees, and set up automated matching alerts. 100% free and open.</p>
         
         <h2>Explore Chennai Rental Markets by Locality</h2>
@@ -944,16 +944,16 @@
         
         <h2>Frequently Asked Questions about Renting in Chennai</h2>
         <article>
-            <h3>How does chennai.rent work?</h3>
+            <h3>How does chennairents.in work?</h3>
             <p>Tap anywhere on the map and drop your rent anonymously. Other renters see real prices in their area. If you're flat-hunting, drop a seeker pin with your budget — we email you when matching listings appear within 2.5km.</p>
         </article>
         <article>
-            <h3>Is chennai.rent free? Do I need to sign up?</h3>
+            <h3>Is chennairents.in free? Do I need to sign up?</h3>
             <p>Yes, free for everyone. No signup, no login, no app required. We don't charge tenants or owners and have no plans to. Rents are crowdsourced for local transparency.</p>
         </article>
         <article>
-            <h3>How is chennai.rent different from broker sites?</h3>
-            <p>Standard sites show broker-quoted listings, which are often inflated. chennai.rent shows real rents shared by actual current and past tenants, letting you see historical averages to guide negotiation.</p>
+            <h3>How is chennairents.in different from broker sites?</h3>
+            <p>Standard sites show broker-quoted listings, which are often inflated. chennairents.in shows real rents shared by actual current and past tenants, letting you see historical averages to guide negotiation.</p>
         </article>
     </section>
 
