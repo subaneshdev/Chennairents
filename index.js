@@ -355,7 +355,7 @@ async function loadPins() {
                 const marker = L.marker([pin.latitude, pin.longitude], {
                     icon: L.divIcon({
                         className: 'custom-pin-marker-wrapper',
-                        html: `<div class="pin-marker" id="pin-id-${pin.id}">
+                        html: `<div class="pin-marker" id="pin-id-${pin.id}" onclick="window._pinClick('${pin.id}')">
                                  <div class="pin-label ${gatedClass}">
                                     ${labelIcon}${rentK}
                                  </div>
@@ -366,7 +366,9 @@ async function loadPins() {
                     })
                 });
 
-                marker.on('click', () => {
+                // Fallback: also keep Leaflet-level click in case onclick doesn't fire
+                marker.on('click', (e) => {
+                    L.DomEvent.stopPropagation(e);
                     openPinDetail(pin);
                 });
 
@@ -455,110 +457,129 @@ async function loadStats() {
 }
 
 // 8. Pin Details, Ratings & Comments Actions
+// Global pin-click handler: called from inline onclick on .pin-marker divs
+// This bypasses the Leaflet hit-zone limitation (CSS transform moves visual outside wrapper)
+window._pinClick = function(pinId) {
+    if (isPinPlacementMode) return; // don't open detail during placement
+    const pin = pinsData.find(p => p.id === pinId);
+    if (pin) openPinDetail(pin);
+};
+
 async function openPinDetail(pin) {
-    currentPin = pin;
-    
-    document.getElementById("detail-area-label").innerText = pin.area ? pin.area.toUpperCase() : 'CHENNAI';
-    document.getElementById("detail-rent-label").innerText = `₹${Number(pin.rent).toLocaleString('en-IN')}`;
-    
-    // Society row
-    if (pin.society) {
-        document.getElementById("detail-society-row").style.display = 'block';
-        document.getElementById("detail-society").innerText = pin.society;
-    } else {
-        document.getElementById("detail-society-row").style.display = 'none';
-    }
+    // Guard: open modal immediately so user sees something, then populate
+    try {
+        currentPin = pin;
 
-    // Security deposit
-    document.getElementById("detail-deposit").innerText = pin.deposit && Number(pin.deposit) > 0 ? `₹${Number(pin.deposit).toLocaleString('en-IN')}` : 'Not Specified';
-    
-    // Maintenance
-    document.getElementById("detail-maintenance").innerText = pin.maintenance_included ? 'Included in Rent' : 'Not Included / Additional';
-    
-    // Parking count
-    document.getElementById("detail-parking").innerText = pin.parking_count > 0 ? `${pin.parking_count} car spot(s)` : 'No Parking';
+        document.getElementById("detail-area-label").innerText = pin.area ? pin.area.toUpperCase() : 'CHENNAI';
+        document.getElementById("detail-rent-label").innerText = `₹${Number(pin.rent).toLocaleString('en-IN')}`;
 
-    // Sqft row
-    if (pin.sqft) {
-        document.getElementById("detail-sqft-row").style.display = 'block';
-        document.getElementById("detail-sqft").innerText = `${pin.sqft} sq.ft`;
-    } else {
-        document.getElementById("detail-sqft-row").style.display = 'none';
-    }
-
-    // Pets row
-    if (pin.pets_allowed) {
-        document.getElementById("detail-pets-row").style.display = 'block';
-        let petsText = '--';
-        if (pin.pets_allowed === 'yes') petsText = 'Allowed 🐕';
-        else if (pin.pets_allowed === 'no') petsText = 'Not Allowed 🚫';
-        else if (pin.pets_allowed === 'not_sure') petsText = 'Not Sure 🤷';
-        document.getElementById("detail-pets").innerText = petsText;
-    } else {
-        document.getElementById("detail-pets-row").style.display = 'none';
-    }
-
-    document.getElementById("detail-occupant").innerText = pin.occupant_type ? pin.occupant_type.charAt(0).toUpperCase() + pin.occupant_type.slice(1) : 'Not Specified';
-    document.getElementById("detail-feedback").innerText = pin.feedback || 'No description comments provided.';
-
-    // Populate Badges
-    const badgesContainer = document.getElementById("detail-badges-container");
-    badgesContainer.innerHTML = '';
-
-    const furnishingBadge = document.createElement("span");
-    furnishingBadge.className = "badge green";
-    furnishingBadge.innerText = pin.furnishing.toUpperCase();
-    badgesContainer.appendChild(furnishingBadge);
-
-    const gatedBadge = document.createElement("span");
-    gatedBadge.className = "badge violet";
-    gatedBadge.innerText = pin.gated ? 'GATED' : 'STANDALONE';
-    badgesContainer.appendChild(gatedBadge);
-
-    if (pin.is_listing) {
-        const listingBadge = document.createElement("span");
-        listingBadge.className = "badge amber";
-        listingBadge.innerText = pin.looking_for_flatmate ? 'ROOM AVLB' : 'WHOLE FLAT';
-        badgesContainer.appendChild(listingBadge);
-
-        // Display landlord contacts (as flex card)
-        const contactCard = document.getElementById("detail-landlord-contact");
-        contactCard.style.display = 'flex';
-        if (pin.ip_hash === 'seed') {
-            contactCard.classList.add("booked");
-            document.getElementById("interest-card-emoji").innerText = '🔒';
-            document.getElementById("interest-card-title").innerText = 'Already Booked';
-            document.getElementById("interest-card-desc").innerText = 'This seed property has already been booked by another seeker.';
-            document.getElementById("interest-card-arrow").innerText = '';
+        // Society row
+        if (pin.society) {
+            document.getElementById("detail-society-row").style.display = 'block';
+            document.getElementById("detail-society").innerText = pin.society;
         } else {
-            contactCard.classList.remove("booked");
-            document.getElementById("interest-card-emoji").innerText = '🏡';
-            document.getElementById("interest-card-title").innerText = "I'm interested in this flat";
-            document.getElementById("interest-card-desc").innerText = "Share your preferences — we'll email the owner with your details and also match you against other nearby flats.";
-            document.getElementById("interest-card-arrow").innerText = '→';
+            document.getElementById("detail-society-row").style.display = 'none';
         }
-    } else {
-        document.getElementById("detail-landlord-contact").style.display = 'none';
+
+        // Security deposit
+        document.getElementById("detail-deposit").innerText = pin.deposit && Number(pin.deposit) > 0 ? `₹${Number(pin.deposit).toLocaleString('en-IN')}` : 'Not Specified';
+
+        // Maintenance
+        document.getElementById("detail-maintenance").innerText = pin.maintenance_included ? 'Included in Rent' : 'Not Included / Additional';
+
+        // Parking count
+        document.getElementById("detail-parking").innerText = pin.parking_count > 0 ? `${pin.parking_count} car spot(s)` : 'No Parking';
+
+        // Sqft row
+        if (pin.sqft) {
+            document.getElementById("detail-sqft-row").style.display = 'block';
+            document.getElementById("detail-sqft").innerText = `${pin.sqft} sq.ft`;
+        } else {
+            document.getElementById("detail-sqft-row").style.display = 'none';
+        }
+
+        // Pets row
+        if (pin.pets_allowed) {
+            document.getElementById("detail-pets-row").style.display = 'block';
+            let petsText = '--';
+            if (pin.pets_allowed === 'yes') petsText = 'Allowed 🐕';
+            else if (pin.pets_allowed === 'no') petsText = 'Not Allowed 🚫';
+            else if (pin.pets_allowed === 'not_sure') petsText = 'Not Sure 🤷';
+            document.getElementById("detail-pets").innerText = petsText;
+        } else {
+            document.getElementById("detail-pets-row").style.display = 'none';
+        }
+
+        document.getElementById("detail-occupant").innerText = pin.occupant_type ? pin.occupant_type.charAt(0).toUpperCase() + pin.occupant_type.slice(1) : 'Not Specified';
+        document.getElementById("detail-feedback").innerText = pin.feedback || 'No description provided.';
+
+        // Populate Badges
+        const badgesContainer = document.getElementById("detail-badges-container");
+        badgesContainer.innerHTML = '';
+
+        const furnishingBadge = document.createElement("span");
+        furnishingBadge.className = "badge green";
+        furnishingBadge.innerText = pin.furnishing ? pin.furnishing.toUpperCase() : 'NOT SPECIFIED';
+        badgesContainer.appendChild(furnishingBadge);
+
+        const gatedBadge = document.createElement("span");
+        gatedBadge.className = "badge violet";
+        gatedBadge.innerText = pin.gated ? 'GATED' : 'STANDALONE';
+        badgesContainer.appendChild(gatedBadge);
+
+        if (pin.is_listing) {
+            const listingBadge = document.createElement("span");
+            listingBadge.className = "badge amber";
+            listingBadge.innerText = pin.looking_for_flatmate ? 'ROOM AVLB' : 'WHOLE FLAT';
+            badgesContainer.appendChild(listingBadge);
+
+            // Seed pins are shown as already booked
+            const contactCard = document.getElementById("detail-landlord-contact");
+            contactCard.style.display = 'flex';
+            // Seed device IDs are 00000000-0000-0000-0000-000000000XXX
+            const isSeed = pin.device_id && pin.device_id.startsWith('00000000-0000-0000-0000-0000000000');
+            if (isSeed) {
+                contactCard.classList.add("booked");
+                document.getElementById("interest-card-emoji").innerText = '🔒';
+                document.getElementById("interest-card-title").innerText = 'Already Booked';
+                document.getElementById("interest-card-desc").innerText = 'This property is no longer available — it has already been taken.';
+                document.getElementById("interest-card-arrow").innerText = '';
+            } else {
+                contactCard.classList.remove("booked");
+                document.getElementById("interest-card-emoji").innerText = '🏡';
+                document.getElementById("interest-card-title").innerText = "I'm interested in this flat";
+                document.getElementById("interest-card-desc").innerText = "Share your preferences — we'll email the owner with your details and also match you against other nearby flats.";
+                document.getElementById("interest-card-arrow").innerText = '→';
+            }
+        } else {
+            document.getElementById("detail-landlord-contact").style.display = 'none';
+        }
+
+        // Toggle Owner Delete row
+        const deleteRow = document.getElementById("detail-owner-actions");
+        if (pin.device_id === deviceId) {
+            deleteRow.style.display = 'block';
+        } else {
+            deleteRow.style.display = 'none';
+        }
+
+        // Open modal immediately so user sees it while ratings load
+        openModal("pin-detail-modal");
+
+        // Highlight pin on map
+        const activeMarkerDom = document.getElementById(`pin-id-${pin.id}`);
+        if (activeMarkerDom) {
+            activeMarkerDom.classList.add("highlighted");
+        }
+
+        // Load ratings & comments async (modal is already open)
+        await loadPinRatingsAndComments(pin.id);
+
+    } catch (err) {
+        console.error("openPinDetail error:", err);
+        // Still try to open the modal even if something went wrong
+        openModal("pin-detail-modal");
     }
-
-    // Toggle Owner Delete row
-    const deleteRow = document.getElementById("detail-owner-actions");
-    if (pin.device_id === deviceId) {
-        deleteRow.style.display = 'block';
-    } else {
-        deleteRow.style.display = 'none';
-    }
-
-    // Fetch and display ratings & comments
-    await loadPinRatingsAndComments(pin.id);
-
-    // Zoom highlight on map
-    const activeMarkerDom = document.getElementById(`pin-id-${pin.id}`);
-    if (activeMarkerDom) {
-        activeMarkerDom.classList.add("highlighted");
-    }
-
-    openModal("pin-detail-modal");
 }
 
 async function loadPinRatingsAndComments(pinId) {
