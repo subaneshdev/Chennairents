@@ -12,6 +12,7 @@ drop view if exists neighbourhood_stats cascade;
 drop table if exists comments cascade;
 drop table if exists ratings cascade;
 drop table if exists reports cascade;
+drop table if exists daily_matches cascade;
 drop table if exists seeker_pins cascade;
 drop table if exists pins cascade;
 drop table if exists message_board cascade;
@@ -131,6 +132,15 @@ create table ip_nudges (
     ip_hash text not null
 );
 
+-- 9b. Create DAILY_MATCHES Table
+create table daily_matches (
+    seeker_id uuid references seeker_pins(id) on delete cascade,
+    listing_id uuid references pins(id) on delete cascade,
+    notified boolean default false not null,
+    created_at timestamptz default now() not null,
+    primary key (seeker_id, listing_id)
+);
+
 -- 10. Enable Row Level Security (RLS)
 alter table pins enable row level security;
 alter table ratings enable row level security;
@@ -139,6 +149,7 @@ alter table reports enable row level security;
 alter table seeker_pins enable row level security;
 alter table message_board enable row level security;
 alter table ip_nudges enable row level security;
+alter table daily_matches enable row level security;
 
 -- 11. Create Geography Column Auto-Population Trigger
 create or replace function update_geography_location()
@@ -547,3 +558,59 @@ begin
     );
 end;
 $$;
+
+-- 17. Daily Matches Finder RPC
+create or replace function find_daily_matches()
+returns table (
+    seeker_id uuid,
+    listing_id uuid,
+    seeker_email text,
+    seeker_phone text,
+    seeker_min_bhk integer,
+    seeker_max_budget numeric,
+    seeker_timeline text,
+    listing_email text,
+    listing_phone text,
+    listing_bhk integer,
+    listing_rent numeric,
+    listing_deposit numeric,
+    listing_furnishing text,
+    area text
+) language plpgsql security definer as $$
+begin
+    return query
+    select
+        s.id as seeker_id,
+        p.id as listing_id,
+        s.email as seeker_email,
+        s.phone as seeker_phone,
+        s.min_bhk as seeker_min_bhk,
+        s.max_budget as seeker_max_budget,
+        s.move_in_timeline as seeker_timeline,
+        coalesce(p.contact_email, p.email) as listing_email,
+        p.contact_phone as listing_phone,
+        p.bhk as listing_bhk,
+        p.rent as listing_rent,
+        p.deposit as listing_deposit,
+        p.furnishing as listing_furnishing,
+        p.area as area
+    from seeker_pins s
+    cross join pins p
+    where s.is_active = true
+      and s.expires_at > now()
+      and p.is_listing = true
+      and p.is_flagged = false
+      and (p.contact_email is not null or p.email is not null)
+      and st_distance(p.location, s.location) <= 2500
+      and p.rent <= s.max_budget
+      and p.rent >= s.max_budget * 0.8
+      and p.bhk >= s.min_bhk
+      and not exists (
+          select 1 
+          from daily_matches dm 
+          where dm.seeker_id = s.id 
+            and dm.listing_id = p.id
+      );
+end;
+$$;
+

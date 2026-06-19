@@ -298,11 +298,11 @@
             document.getElementById("locality-desc").innerText = areaInfo.desc;
             document.getElementById("local-banner").innerText = `Showing rent records for ${areaInfo.name}`;
 
-            // Init Map with Dark Tiles
+            // Init Map with OpenStreetMap Standard Bright Style
             map = L.map('map', { zoomControl: false }).setView(areaInfo.center, 13);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                maxZoom: 20,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
             // Initialize Metro & MRTS Lines

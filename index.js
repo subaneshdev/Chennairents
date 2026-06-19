@@ -200,10 +200,10 @@ function initMap() {
         attributionControl: true
     }).setView([13.0827, 80.2707], 12);
 
-    // Dark Positron Base Style (Matches bengaluru.rent dark theme)
-    baseTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 20,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    // OpenStreetMap Standard Bright Style
+    baseTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
     // Satellite Imagery Layer (Standard Esri Satellite tiles)
@@ -786,9 +786,24 @@ window.switchFromPinToSeeker = function() {
     openModal("seeker-add-modal");
 };
 
+function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
 // Pin Add Form (Plain anonymous contribution)
 document.getElementById("pin-add-form").addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    const email = document.getElementById("pa-email").value.trim();
+    if (!email) {
+        alert("Email is compulsory to drop a pin.");
+        return;
+    }
+    if (!isValidEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
 
     const rent = parseFloat(document.getElementById("pa-rent").value);
     const bhk = parseInt(selectedChips['pa-bhk'] || '1');
@@ -867,6 +882,21 @@ window.openOwnerRoomForm = function() {
 document.getElementById("owner-whole-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const email = document.getElementById("ow-email").value.trim();
+    const phone = document.getElementById("ow-phone").value.trim();
+    if (!email) {
+        alert("Email is compulsory to list your flat.");
+        return;
+    }
+    if (!isValidEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+    if (!phone) {
+        alert("Contact phone is compulsory to list your flat.");
+        return;
+    }
+
     const rent = parseFloat(document.getElementById("ow-rent").value);
     const bhk = parseInt(selectedChips['ow-bhk'] || '1');
 
@@ -928,6 +958,21 @@ document.getElementById("owner-whole-form").addEventListener("submit", async (e)
 document.getElementById("owner-room-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const email = document.getElementById("or-email").value.trim();
+    const phone = document.getElementById("or-phone").value.trim();
+    if (!email) {
+        alert("Email is compulsory to list your room.");
+        return;
+    }
+    if (!isValidEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+    if (!phone) {
+        alert("Contact phone is compulsory to list your room.");
+        return;
+    }
+
     const rent = parseFloat(document.getElementById("or-rent").value);
 
     // Rate Limit Check
@@ -986,8 +1031,21 @@ document.getElementById("owner-room-form").addEventListener("submit", async (e) 
 document.getElementById("seeker-add-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("sa-email").value;
-    const phone = document.getElementById("sa-phone").value;
+    const email = document.getElementById("sa-email").value.trim();
+    const phone = document.getElementById("sa-phone").value.trim();
+
+    if (!email) {
+        alert("Email is compulsory to activate alerts.");
+        return;
+    }
+    if (!isValidEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+    if (!phone) {
+        alert("Phone number is compulsory to activate alerts.");
+        return;
+    }
 
     // Check Seeker limits
     const { data: isLimitHit, error: limitErr } = await db.rpc('check_seeker_limit', { p_ip_hash: ipHash });
@@ -1611,8 +1669,22 @@ function resetFormChips(group, defaultVal = null) {
 document.getElementById("express-interest-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("ei-email").value;
-    const phone = document.getElementById("ei-phone").value;
+    const email = document.getElementById("ei-email").value.trim();
+    const phone = document.getElementById("ei-phone").value.trim();
+
+    if (!email) {
+        alert("Email is compulsory to express interest.");
+        return;
+    }
+    if (!isValidEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+    if (!phone) {
+        alert("Phone number is compulsory to express interest.");
+        return;
+    }
+
     const budget = parseFloat(document.getElementById("ei-budget").value);
     const lat = parseFloat(document.getElementById("ei-lat").value);
     const lng = parseFloat(document.getElementById("ei-lng").value);
