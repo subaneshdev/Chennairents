@@ -854,12 +854,14 @@
                 <div class="detail-meta-item">📝 <strong>Feedback:</strong> <span id="detail-feedback" style="font-style:italic;">No comments provided.</span></div>
             </div>
 
-            <!-- Direct Landlord contact details block (shown only on listings) -->
-            <div id="detail-landlord-contact" style="display: none; padding:12px; border-radius:10px; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); margin-bottom:16px;">
-                <p style="font-size:12px; font-weight:700; color:#4ade80; text-transform:uppercase; margin-bottom:6px;">Direct Owner Contact</p>
-                <p style="font-size:13px; margin-bottom:6px;"><strong>Email:</strong> <span id="contact-email">--</span></p>
-                <p style="font-size:13px; margin-bottom:6px;"><strong>Phone:</strong> <span id="contact-phone">--</span></p>
-                <button class="btn btn-submit" id="express-interest-btn" style="width: 100%; margin-top: 12px; background: #ff3e00; color: white;" onclick="openExpressInterest()">I'm Interested</button>
+            <!-- I'm Interested Card (shown only on listings) -->
+            <div id="detail-landlord-contact" class="interest-card" onclick="openExpressInterest()" style="display: none;">
+                <span class="interest-card-emoji" id="interest-card-emoji">🏡</span>
+                <div class="interest-card-content">
+                    <div class="interest-card-title" id="interest-card-title">I'm interested in this flat</div>
+                    <div class="interest-card-desc" id="interest-card-desc">Share your preferences — we'll email the owner with your details and also match you against other nearby flats.</div>
+                </div>
+                <span class="interest-card-arrow" id="interest-card-arrow">→</span>
             </div>
 
             <!-- Rating Segment -->

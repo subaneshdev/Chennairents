@@ -521,28 +521,21 @@ async function openPinDetail(pin) {
         listingBadge.innerText = pin.looking_for_flatmate ? 'ROOM AVLB' : 'WHOLE FLAT';
         badgesContainer.appendChild(listingBadge);
 
-        // Display landlord contacts
-        document.getElementById("detail-landlord-contact").style.display = 'block';
+        // Display landlord contacts (as flex card)
+        const contactCard = document.getElementById("detail-landlord-contact");
+        contactCard.style.display = 'flex';
         if (pin.ip_hash === 'seed') {
-            document.getElementById("contact-email").innerText = 'Already Booked';
-            document.getElementById("contact-phone").innerText = 'Already Booked';
-            const interestBtn = document.getElementById("express-interest-btn");
-            if (interestBtn) {
-                interestBtn.innerText = 'Already Booked';
-                interestBtn.disabled = true;
-                interestBtn.style.background = '#6b7280';
-                interestBtn.onclick = () => alert("This seed property has already been booked by another seeker.");
-            }
+            contactCard.classList.add("booked");
+            document.getElementById("interest-card-emoji").innerText = '🔒';
+            document.getElementById("interest-card-title").innerText = 'Already Booked';
+            document.getElementById("interest-card-desc").innerText = 'This seed property has already been booked by another seeker.';
+            document.getElementById("interest-card-arrow").innerText = '';
         } else {
-            document.getElementById("contact-email").innerText = pin.contact_email || '--';
-            document.getElementById("contact-phone").innerText = pin.contact_phone || '--';
-            const interestBtn = document.getElementById("express-interest-btn");
-            if (interestBtn) {
-                interestBtn.innerText = "I'm Interested";
-                interestBtn.disabled = false;
-                interestBtn.style.background = '#ff3e00';
-                interestBtn.onclick = () => openExpressInterest();
-            }
+            contactCard.classList.remove("booked");
+            document.getElementById("interest-card-emoji").innerText = '🏡';
+            document.getElementById("interest-card-title").innerText = "I'm interested in this flat";
+            document.getElementById("interest-card-desc").innerText = "Share your preferences — we'll email the owner with your details and also match you against other nearby flats.";
+            document.getElementById("interest-card-arrow").innerText = '→';
         }
     } else {
         document.getElementById("detail-landlord-contact").style.display = 'none';
