@@ -742,67 +742,8 @@
                     <input type="tel" id="sa-phone" class="form-input" placeholder="10-digit mobile" required>
                 </div>
 
-    <!-- ── MODAL: Express Interest Modal ── -->
-    <div class="modal-backdrop" id="express-interest-modal" onclick="closeModal('express-interest-modal')">
-        <div class="modal-card" onclick="event.stopPropagation()">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <span class="modal-title">Tell us about you</span>
-                <button class="close-btn" onclick="closeModal('express-interest-modal')">&times;</button>
-            </div>
-            <p class="modal-sub" id="ei-sub-text" style="line-height:1.45; margin-bottom:16px;">You're expressing interest in...</p>
-            <form id="express-interest-form">
-                <input type="hidden" id="ei-lat">
-                <input type="hidden" id="ei-lng">
-                <input type="hidden" id="ei-bhk">
-                <input type="hidden" id="ei-type">
-                
-                <div class="field-group">
-                    <label class="field-label">Your budget (₹/month, editable)<span>*</span></label>
-                    <input type="number" id="ei-budget" class="form-input" required>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Move-in Timeline<span>*</span></label>
-                    <div class="chips-row" id="ei-move-chips">
-                        <div class="option-chip active" onclick="selectFormChip('ei-move', 'asap')">ASAP</div>
-                        <div class="option-chip" onclick="selectFormChip('ei-move', 'next_month')">Next month</div>
-                        <div class="option-chip" onclick="selectFormChip('ei-move', 'flexible')">Flexible</div>
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">You are (optional but helps matching)</label>
-                    <div class="chips-row" id="ei-gender-chips">
-                        <div class="option-chip" onclick="selectFormChip('ei-gender', 'male')">Male</div>
-                        <div class="option-chip" onclick="selectFormChip('ei-gender', 'female')">Female</div>
-                        <div class="option-chip" onclick="selectFormChip('ei-gender', 'other')">Other</div>
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">🚗 Parking required?<span>*</span></label>
-                    <div class="chips-row" id="ei-parking-chips">
-                        <div class="option-chip active" onclick="selectFormChip('ei-parking', 'yes')">Yes, need parking</div>
-                        <div class="option-chip" onclick="selectFormChip('ei-parking', 'no')">No preference</div>
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Your email<span>*</span></label>
-                    <input type="email" id="ei-email" class="form-input" placeholder="you@example.com" required>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Phone number<span>*</span></label>
-                    <input type="tel" id="ei-phone" class="form-input" placeholder="10-digit mobile" required>
-                </div>
-
-                <p style="font-size:11px; color:#6b7280; margin:10px 0 16px 0; line-height:1.4;">
-                    Private — only shared when we find a match for you. Please enter a valid email address.
-                </p>
-
-                <div style="display:flex; gap:10px;">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal('express-interest-modal')">Cancel</button>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('seeker-add-modal')">Cancel</button>
                     <button type="submit" class="btn btn-submit">Drop Seeker Pin</button>
                 </div>
             </form>
@@ -854,14 +795,74 @@
                 <div class="detail-meta-item">📝 <strong>Feedback:</strong> <span id="detail-feedback" style="font-style:italic;">No comments provided.</span></div>
             </div>
 
-            <!-- I'm Interested Card (shown only on listings) -->
-            <div id="detail-landlord-contact" class="interest-card" onclick="openExpressInterest()" style="display: none;">
-                <span class="interest-card-emoji" id="interest-card-emoji">🏡</span>
-                <div class="interest-card-content">
-                    <div class="interest-card-title" id="interest-card-title">I'm interested in this flat</div>
-                    <div class="interest-card-desc" id="interest-card-desc">Share your preferences — we'll email the owner with your details and also match you against other nearby flats.</div>
+            <!-- Embedded Express Interest / Landlord Contact Form -->
+            <div id="detail-express-interest-container" style="display: none; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; margin-top: 16px;">
+                <!-- Already Booked Banner -->
+                <div id="detail-booked-banner" style="display: none; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); padding: 12px 14px; border-radius: 12px; margin-bottom: 12px; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">🔒</span>
+                    <div style="text-align: left;">
+                        <div style="font-size: 12px; color: white; font-weight: 600;">Already Booked</div>
+                        <div style="font-size: 11px; color: #f87171; font-weight: 500;">This property is no longer available — it has already been taken.</div>
+                    </div>
                 </div>
-                <span class="interest-card-arrow" id="interest-card-arrow">→</span>
+
+                <!-- Express Interest Form -->
+                <div id="detail-interest-form-wrap">
+                    <span style="font-size:11px; text-transform:uppercase; font-weight:700; color:#6b7280; display:block; margin-bottom:12px;">Express Interest in this Flat</span>
+                    <form id="express-interest-form">
+                        <input type="hidden" id="ei-lat">
+                        <input type="hidden" id="ei-lng">
+                        <input type="hidden" id="ei-bhk">
+                        <input type="hidden" id="ei-type">
+                        
+                        <div class="field-group">
+                            <label class="field-label">Your budget (₹/month, editable)<span>*</span></label>
+                            <input type="number" id="ei-budget" class="form-input" required>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">Move-in Timeline<span>*</span></label>
+                            <div class="chips-row" id="ei-move-chips">
+                                <div class="option-chip active" onclick="selectFormChip('ei-move', 'asap')">ASAP</div>
+                                <div class="option-chip" onclick="selectFormChip('ei-move', 'next_month')">Next month</div>
+                                <div class="option-chip" onclick="selectFormChip('ei-move', 'flexible')">Flexible</div>
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">You are (optional but helps matching)</label>
+                            <div class="chips-row" id="ei-gender-chips">
+                                <div class="option-chip" onclick="selectFormChip('ei-gender', 'male')">Male</div>
+                                <div class="option-chip" onclick="selectFormChip('ei-gender', 'female')">Female</div>
+                                <div class="option-chip" onclick="selectFormChip('ei-gender', 'other')">Other</div>
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">🚗 Parking required?<span>*</span></label>
+                            <div class="chips-row" id="ei-parking-chips">
+                                <div class="option-chip active" onclick="selectFormChip('ei-parking', 'yes')">Yes, need parking</div>
+                                <div class="option-chip" onclick="selectFormChip('ei-parking', 'no')">No preference</div>
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">Your email<span>*</span></label>
+                            <input type="email" id="ei-email" class="form-input" placeholder="you@example.com" required>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">Phone number<span>*</span></label>
+                            <input type="tel" id="ei-phone" class="form-input" placeholder="10-digit mobile" required>
+                        </div>
+
+                        <p style="font-size:11px; color:#6b7280; margin:10px 0 16px 0; line-height:1.4;">
+                            Private — only shared when we find a match for you. Please enter a valid email address.
+                        </p>
+
+                        <button type="submit" class="btn btn-submit" style="width: 100%;">Submit Interest & Seeker Pin</button>
+                    </form>
+                </div>
             </div>
 
             <!-- Rating Segment -->

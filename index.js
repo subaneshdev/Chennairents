@@ -219,6 +219,20 @@ function initMap() {
         }
     });
 
+    // ── PIN DETAIL: Document-level event delegation ──────────────────────────
+    // Leaflet's marker click zone doesn't always cover the visually-transformed
+    // .pin-marker label. Listening on document guarantees we catch the click
+    // wherever the user actually taps/clicks the visible price label.
+    document.addEventListener('click', (e) => {
+        if (isPinPlacementMode) return;
+        const pinEl = e.target.closest('[id^="pin-id-"]');
+        if (!pinEl) return;
+        e.stopPropagation();
+        const pinId = pinEl.id.replace('pin-id-', '');
+        const pin = pinsData.find(p => p.id === pinId);
+        if (pin) openPinDetail(pin);
+    });
+
     // Initialize Metro & MRTS Lines
     metroLinesGroup = L.layerGroup();
     initMetroLines();
@@ -355,7 +369,7 @@ async function loadPins() {
                 const marker = L.marker([pin.latitude, pin.longitude], {
                     icon: L.divIcon({
                         className: 'custom-pin-marker-wrapper',
-                        html: `<div class="pin-marker" id="pin-id-${pin.id}" onclick="window._pinClick('${pin.id}')">
+                        html: `<div class="pin-marker" id="pin-id-${pin.id}" onclick="_pinClick('${pin.id}')">
                                  <div class="pin-label ${gatedClass}">
                                     ${labelIcon}${rentK}
                                  </div>
@@ -366,12 +380,11 @@ async function loadPins() {
                     })
                 });
 
-                // Fallback: also keep Leaflet-level click in case onclick doesn't fire
-                marker.on('click', (e) => {
-                    L.DomEvent.stopPropagation(e);
+                // Attach direct click event listener as a backup
+                marker.on('click', () => {
+                    if (isPinPlacementMode) return;
                     openPinDetail(pin);
                 });
-
                 marker.addTo(map);
                 markerLayersGroup.push(marker);
             });
@@ -533,26 +546,35 @@ async function openPinDetail(pin) {
             listingBadge.innerText = pin.looking_for_flatmate ? 'ROOM AVLB' : 'WHOLE FLAT';
             badgesContainer.appendChild(listingBadge);
 
+            // Show container
+            document.getElementById("detail-express-interest-container").style.display = 'block';
+
             // Seed pins are shown as already booked
-            const contactCard = document.getElementById("detail-landlord-contact");
-            contactCard.style.display = 'flex';
-            // Seed device IDs are 00000000-0000-0000-0000-000000000XXX
-            const isSeed = pin.device_id && pin.device_id.startsWith('00000000-0000-0000-0000-0000000000');
+            const isSeed = (pin.device_id && pin.device_id.startsWith('00000000-0000-0000-0000-0000000000')) || pin.ip_hash === 'seed';
             if (isSeed) {
-                contactCard.classList.add("booked");
-                document.getElementById("interest-card-emoji").innerText = '🔒';
-                document.getElementById("interest-card-title").innerText = 'Already Booked';
-                document.getElementById("interest-card-desc").innerText = 'This property is no longer available — it has already been taken.';
-                document.getElementById("interest-card-arrow").innerText = '';
+                document.getElementById("detail-booked-banner").style.display = 'flex';
+                document.getElementById("detail-interest-form-wrap").style.display = 'none';
             } else {
-                contactCard.classList.remove("booked");
-                document.getElementById("interest-card-emoji").innerText = '🏡';
-                document.getElementById("interest-card-title").innerText = "I'm interested in this flat";
-                document.getElementById("interest-card-desc").innerText = "Share your preferences — we'll email the owner with your details and also match you against other nearby flats.";
-                document.getElementById("interest-card-arrow").innerText = '→';
+                document.getElementById("detail-booked-banner").style.display = 'none';
+                document.getElementById("detail-interest-form-wrap").style.display = 'block';
+
+                // Populate Form Fields
+                document.getElementById("ei-lat").value = pin.latitude;
+                document.getElementById("ei-lng").value = pin.longitude;
+                document.getElementById("ei-bhk").value = pin.bhk;
+                document.getElementById("ei-type").value = pin.looking_for_flatmate ? 'room' : 'whole_flat';
+                document.getElementById("ei-budget").value = pin.rent;
+
+                resetFormChips('ei-move', 'flexible');
+                selectFormChip('ei-move', 'flexible');
+                
+                resetFormChips('ei-gender', null);
+                
+                resetFormChips('ei-parking', 'yes');
+                selectFormChip('ei-parking', 'yes');
             }
         } else {
-            document.getElementById("detail-landlord-contact").style.display = 'none';
+            document.getElementById("detail-express-interest-container").style.display = 'none';
         }
 
         // Toggle Owner Delete row
@@ -1284,6 +1306,9 @@ window.closeModal = function(id) {
         const highlighted = document.querySelectorAll(".pin-marker.highlighted");
         highlighted.forEach(h => h.classList.remove("highlighted"));
         currentPin = null;
+        // Reset the express interest form if it exists
+        const interestForm = document.getElementById("express-interest-form");
+        if (interestForm) interestForm.reset();
     }
 };
 
@@ -1792,8 +1817,7 @@ async function submitInterestPin(email, phone, payload) {
         if (error) throw error;
 
         alert("Interest recorded and Seeker Pin dropped successfully! We will alert you of any matches.");
-        closeModal("express-interest-modal");
-        document.getElementById("express-interest-form").reset();
+        closeModal("pin-detail-modal");
         await loadPins();
     } catch (err) {
         alert("Submission error: " + err.message);
