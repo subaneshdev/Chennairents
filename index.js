@@ -1440,6 +1440,22 @@ window.openFaq = function() {
     openModal('faq-modal');
 };
 
+window.openContentPortal = function() {
+    openModal('content-portal-modal');
+};
+
+window.switchPortalTab = function(tabId) {
+    const contents = document.querySelectorAll('#content-portal-modal .portal-tab-content');
+    contents.forEach(c => c.classList.remove('active'));
+
+    const tabs = document.querySelectorAll('#content-portal-modal .portal-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+
+    document.getElementById(tabId).classList.add('active');
+    const btn = document.getElementById('btn-' + tabId);
+    if (btn) btn.classList.add('active');
+};
+
 // HTML escaping helper
 function escapeHtml(s) {
     if (s == null) return '';
