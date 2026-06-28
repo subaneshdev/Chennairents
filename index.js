@@ -1588,7 +1588,7 @@ window.shareWhatsApp = function() {
     if (!currentPin) return;
     const rentFormatted = Number(currentPin.rent).toLocaleString('en-IN');
     const flatType = currentPin.is_listing ? (currentPin.looking_for_flatmate ? 'Room in shared flat' : 'Whole flat') : 'rent pin';
-    const msg = `Check out this rental on chennairents.in: ${currentPin.bhk} BHK ${flatType} in ${currentPin.area || 'Chennai'} for ₹${rentFormatted}/month. See full details on map: https://www.chennairents.in/neighbourhood.html?area=${(currentPin.area || '').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    const msg = `Check out this rental on chennairents.in: ${currentPin.bhk} BHK ${flatType} in ${currentPin.area || 'Chennai'} for ₹${rentFormatted}/month. See full details on map: https://www.chennairents.in/neighbourhood/${(currentPin.area || '').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.html`;
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
 };
