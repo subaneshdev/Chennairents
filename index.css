@@ -7,11 +7,26 @@
 }
 
 html, body {
-    height: 100%;
-    width: 100%;
     background-color: #0d0d0d;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: #e2e8f0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Standalone pages (guides, stories, contact, privacy) scroll naturally */
+html {
+    overflow-y: auto;
+}
+body {
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+/* Lock scrolling only for the main interactive map page */
+body.map-page {
+    height: 100%;
+    width: 100%;
     overflow: hidden;
 }
 
@@ -1226,6 +1241,30 @@ html, body {
     font-size: 12px;
     color: #9ca3af;
     line-height: 1.45;
+}
+
+/* Responsive layout fixes for Neighbourhood & Split-Pane Pages */
+@media (max-width: 768px) {
+    .app-container {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        width: 100% !important;
+        overflow: auto !important;
+    }
+    .map-pane {
+        height: 320px !important;
+        min-height: 320px !important;
+        width: 100% !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    .content-pane {
+        height: auto !important;
+        overflow-y: visible !important;
+        flex: 1 !important;
+    }
 }
 
 
